@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"nodemon\" \"nodemon -x tsoa spec-and-routes\"",
     "build": "tsoa spec-and-routes && tsc --build",
-    "start": "node public/src/index.js",
+    "start": "node build/src/index.js",
     "test": "mocha --require ts-node/register 'test/**/*.test.ts' --recursive"
   },
   "devDependencies": {
