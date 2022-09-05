@@ -1,4 +1,4 @@
-name: Test Server CI
+name: Test Server
 
 on:
   push:
@@ -21,8 +21,11 @@ jobs:
         with:
           node-version: '16.x'
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: |
+          yarn --frozen-lockfile
       - name: Build Server
-        run: yarn build
+        run: |
+          yarn build
       - name: Run tests
-        run: yarn test
+        run: |
+          yarn test
