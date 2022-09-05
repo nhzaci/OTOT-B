@@ -4,4 +4,7 @@
 /test/
 .env.example
 *.md
-*.yml
+*.yml# Elastic Beanstalk Files
+.elasticbeanstalk/*
+.git
+.gitignore
