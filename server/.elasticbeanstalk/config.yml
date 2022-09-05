@@ -1,12 +1,12 @@
 branch-defaults:
   default:
-    environment: Cs3219ay2223s1ototbdocker-env
+    environment: Cs3219ay2223s1ototbnode-env
     group_suffix: null
 global:
-  application_name: cs3219_ay22_23_s1_otot-b_docker
+  application_name: CS3219_AY22_23_S1_OTOT-B_Node
   branch: null
-  default_ec2_keyname: aws-eb
-  default_platform: Docker running on 64bit Amazon Linux 2
+  default_ec2_keyname: null
+  default_platform: Node.js 16
   default_region: us-east-1
   include_git_submodules: true
   instance_profile: null
