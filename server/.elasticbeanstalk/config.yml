@@ -1,9 +1,9 @@
 branch-defaults:
   default:
-    environment: Cs3219ay2223s1ototbnode-env
+    environment: OTOT-B-Node-Env
     group_suffix: null
 global:
-  application_name: CS3219_AY22_23_S1_OTOT-B_Node
+  application_name: OTOT-B-Node-Server
   branch: null
   default_ec2_keyname: null
   default_platform: Node.js 16
