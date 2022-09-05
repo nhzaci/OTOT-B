@@ -1,18 +1,19 @@
 branch-defaults:
   default:
-    environment: OTOT-B-Node-Env
-    group_suffix: null
+    environment: OTOT-B-Docker-Env
+environment-defaults:
+  OTOT-B-Docker-Env:
+    branch: null
+    repository: null
 global:
-  application_name: OTOT-B-Node-Server
-  branch: null
+  application_name: OTOT-B-Docker-Server
   default_ec2_keyname: null
-  default_platform: Node.js 16
+  default_platform: Docker running on 64bit Amazon Linux 2
   default_region: us-east-1
   include_git_submodules: true
   instance_profile: null
   platform_name: null
   platform_version: null
-  profile: null
-  repository: null
+  profile: eb-cli
   sc: null
   workspace_type: Application

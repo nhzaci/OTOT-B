@@ -16,10 +16,10 @@ RUN yarn install --frozen-lockfile
 # set production
 ENV NODE_ENV production
 # set port
-ENV PORT 80
+ENV PORT 5000
 
-# expose port 80 for api calls
-EXPOSE 80
+# expose port 5000, default for aws ebs for api calls
+EXPOSE 5000
 
 # build yarn proj into dist output files
 RUN yarn build
