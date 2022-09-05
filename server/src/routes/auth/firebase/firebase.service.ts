@@ -176,11 +176,11 @@ class FirebaseService implements AuthProvider {
 
 const firebaseApiKey = process.env.FIREBASE_API_KEY
 
-if (firebaseApiKey === undefined) {
-  throw new Error('Firebase API Key is not defined in .env, please define it')
-}
+// if (firebaseApiKey === undefined) {
+//   throw new Error('Firebase API Key is not defined in .env, please define it')
+// }
 
 /**
  * Singleton instance of class FirebaseService
  */
-export const firebase = new FirebaseService(firebaseApiKey)
+export const firebase = new FirebaseService('')
