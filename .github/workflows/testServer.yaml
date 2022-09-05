@@ -22,5 +22,7 @@ jobs:
           node-version: '16.x'
       - name: Install dependencies
         run: yarn --frozen-lockfile
+      - name: Build Server
+        run: yarn build
       - name: Run tests
         run: yarn test
