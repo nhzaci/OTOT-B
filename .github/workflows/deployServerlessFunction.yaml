@@ -1,0 +1,38 @@
+name: Deploy serverless on AWS Lambda
+  
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deployServerless:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./serverless
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+
+      - name: Install dependencies
+        run: |
+          yarn --frozen-lockfile
+
+      - name: Zip serverless folder
+        run: |
+          zip -r serverless.zip .
+      
+      - name: Upload new zip to AWS Lambda
+        run: |
+          aws lambda update-function-code --function-name hello-world-node --zip-file fileb://serverless.zip
