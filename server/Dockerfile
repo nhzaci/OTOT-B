@@ -16,10 +16,10 @@ RUN yarn install --frozen-lockfile
 # set production
 ENV NODE_ENV production
 # set port
-ENV PORT 3000
+ENV PORT 80
 
-# expose port 3000 for api calls
-EXPOSE 3000
+# expose port 80 for api calls
+EXPOSE 80
 
 # build yarn proj into dist output files
 RUN yarn build
