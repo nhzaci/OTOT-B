@@ -2,22 +2,24 @@
 FROM node:16
 
 # create app dir
-RUN mkdir -p /usr/src/app
+RUN mkdir -p /usr/app/src
 
 # set working dir
-WORKDIR /usr/src/app
+WORKDIR /usr/app
 
 # Copy all files over for build
-COPY package.json yarn.lock ./
+COPY . ./
 
-# Install app deps
-RUN yarn install
+# Install app deps without amending lock file
+RUN yarn install --frozen-lockfile
 
-# Copy over app source
-COPY . /usr/src/app
+# set production
+ENV NODE_ENV production
+# set port
+ENV PORT 8080
 
-# expose port 3000 for api calls
-EXPOSE 3000
+# expose port 8080 for api calls
+EXPOSE 8080
 
 # build yarn proj into dist output files
 RUN yarn build
