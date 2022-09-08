@@ -1,8 +1,9 @@
 name: Deploy serverless on AWS Lambda
-  
-on:
-  push:
-    branches: [ main ]
+
+# don't run on push since it can be changes to server too
+# on:
+#   push:
+#     branches: [ main ]
 
 jobs:
   deployServerless:
@@ -32,7 +33,7 @@ jobs:
       - name: Zip serverless folder
         run: |
           zip -r serverless.zip .
-      
+
       - name: Upload new zip to AWS Lambda
         run: |
           aws lambda update-function-code --function-name hello-world-node --zip-file fileb://serverless.zip
