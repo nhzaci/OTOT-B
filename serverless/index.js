@@ -3,7 +3,6 @@ const axios = require('axios')
 const makeJsonResponse = (body, code) => ({
   statusCode: code,
   headers: {
-    'Access-Control-Allow-Origin': 'http://localhost:3000',
     'Content-Type': 'application/json',
   },
   body,
@@ -20,15 +19,16 @@ const makeErrorResponse = (message) => ({
 const NEA_TEMPERATURE_API_URL =
   'https://api.data.gov.sg/v1/environment/air-temperature'
 const getTemperature = async (event) => {
-  const params = {}
-  if (event.date !== undefined) params.date = event.date
-  if (event.date_time !== undefined) params.date_time = event.date_time
-
   try {
+    const params = {}
+    if (event.date !== undefined) params.date = event.date
+    if (event.date_time !== undefined) params.date_time = event.date_time
+
     const result = await axios.get(NEA_TEMPERATURE_API_URL, { params })
-    return makeJsonResponse(result.data)
+
+    return makeJsonResponse({ data: result.data })
   } catch (err) {
-    return makeErrorResponse(err)
+    return makeErrorResponse({ message: err?.response?.message })
   }
 }
 
@@ -41,10 +41,20 @@ const getTemperature = async (event) => {
 exports.handler = async (request) => {
   const event = request.queryStringParameters
 
-  switch (event.type) {
-    case 'temperature':
-      return getTemperature(event)
-    default:
-      return makeErrorResponse(`Event ${event.type} is not recognized.`)
+  try {
+    switch (event.type) {
+      case 'temperature':
+        return getTemperature(event)
+      default:
+        return makeErrorResponse({
+          message: `Event ${event.type} is not recognized.`,
+          params: event,
+        })
+    }
+  } catch (err) {
+    return makeErrorResponse({
+      message: `Event resulted in error: ${err}`,
+      params: event,
+    })
   }
 }
