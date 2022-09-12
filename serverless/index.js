@@ -39,20 +39,12 @@ const getTemperature = async (event) => {
  * tab space
  */
 exports.handler = async (request) => {
-  const event = {}
-  if (request.queryStringParameters) {
-    for (const [key, value] of Object.entries(request.queryStringParameters)) {
-      event[key] = value
-    }
-  }
-
-  if (event.type === undefined)
-    return makeErrorResponse("No event type was passed in 'type' key of event")
+  const event = request.queryStringParameters
 
   switch (event.type) {
     case 'temperature':
       return getTemperature(event)
     default:
-      return makeErrorResponse(`Event {event.type} is not recognized.`)
+      return makeErrorResponse(`Event ${event.type} is not recognized.`)
   }
 }
