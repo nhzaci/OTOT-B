@@ -13,7 +13,7 @@ const makeErrorResponse = (message) => ({
   headers: {
     'Content-Type': 'application/json',
   },
-  body: err,
+  body: message,
 })
 
 const NEA_TEMPERATURE_API_URL =
