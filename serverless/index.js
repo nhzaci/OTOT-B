@@ -37,7 +37,13 @@ const getTemperature = async (event) => {
  * to build with lambda.
  * tab space
  */
-exports.handler = async (event) => {
+exports.handler = async (request) => {
+  if (request.body === undefined)
+    return makeErrorResponse(
+      'Please pass in a request body signifying event type'
+    )
+
+  const event = JSON.parse(request.body)
   if (event?.type === undefined)
     return makeErrorResponse("No event type was passed in 'type' key of event")
 
