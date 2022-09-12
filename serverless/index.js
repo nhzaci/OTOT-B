@@ -3,6 +3,7 @@ const axios = require('axios')
 const makeJsonResponse = (body, code) => ({
   statusCode: code,
   headers: {
+    'Access-Control-Allow-Origin': 'http://localhost:3000',
     'Content-Type': 'application/json',
   },
   body,
@@ -20,8 +21,8 @@ const NEA_TEMPERATURE_API_URL =
   'https://api.data.gov.sg/v1/environment/air-temperature'
 const getTemperature = async (event) => {
   const params = {}
-  if (event?.date !== undefined) params.date = event.date
-  if (event?.date_time !== undefined) params.date_time = event.date_time
+  if (event.date !== undefined) params.date = event.date
+  if (event.date_time !== undefined) params.date_time = event.date_time
 
   try {
     const result = await axios.get(NEA_TEMPERATURE_API_URL, { params })
@@ -38,13 +39,14 @@ const getTemperature = async (event) => {
  * tab space
  */
 exports.handler = async (request) => {
-  if (request.body === undefined)
-    return makeErrorResponse(
-      'Please pass in a request body signifying event type'
-    )
+  const event = {}
+  if (request.queryStringParameters) {
+    for (const [key, value] of Object.entries(request.queryStringParameters)) {
+      event[key] = value
+    }
+  }
 
-  const event = JSON.parse(request.body)
-  if (event?.type === undefined)
+  if (event.type === undefined)
     return makeErrorResponse("No event type was passed in 'type' key of event")
 
   switch (event.type) {
