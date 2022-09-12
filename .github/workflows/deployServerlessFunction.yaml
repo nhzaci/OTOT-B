@@ -1,7 +1,6 @@
 name: Deploy serverless on AWS Lambda
 
-# don't run on push since it can be changes to server too
-# on:
+on: workflow_dispatch
 #   push:
 #     branches: [ main ]
 

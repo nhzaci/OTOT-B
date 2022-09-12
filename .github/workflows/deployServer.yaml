@@ -1,6 +1,6 @@
 name: Deploy Server on AWS EB
 
-# on:
+on: workflow_dispatch
 #   push:
 #     branches: [ main ]
 
