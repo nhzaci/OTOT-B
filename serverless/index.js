@@ -25,7 +25,7 @@ const getTemperature = async (event) => {
 
   try {
     const result = await axios.get(NEA_TEMPERATURE_API_URL, { params })
-    return makeJsonResponse(result)
+    return makeJsonResponse(JSON.stringify(result))
   } catch (err) {
     return makeErrorResponse(err)
   }
