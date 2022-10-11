@@ -34,7 +34,9 @@ class FirebaseService implements AuthProvider {
 
   constructor(apiKey: string) {
     this.apiKey = apiKey
-    this.fbApp = initializeApp({ credential: applicationDefault() })
+    this.fbApp = initializeApp({
+      credential: applicationDefault(),
+    })
     this.fbAuth = getAuth(this.fbApp)
   }
 
@@ -176,11 +178,11 @@ class FirebaseService implements AuthProvider {
 
 const firebaseApiKey = process.env.FIREBASE_API_KEY
 
-// if (firebaseApiKey === undefined) {
-//   throw new Error('Firebase API Key is not defined in .env, please define it')
-// }
+if (firebaseApiKey === undefined) {
+  throw new Error('Firebase API Key is not defined in .env, please define it')
+}
 
 /**
  * Singleton instance of class FirebaseService
  */
-export const firebase = new FirebaseService('')
+export const firebase = new FirebaseService(firebaseApiKey)

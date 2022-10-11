@@ -1,5 +1,5 @@
 export type UserDocument = {
-  id: string
+  _id: string
   roles: string[]
   email?: string
 }

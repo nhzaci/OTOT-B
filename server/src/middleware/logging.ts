@@ -8,10 +8,8 @@ const requestLogger: RequestHandler = (req, _, next) => {
 
 const errorHandler: ErrorRequestHandler = (err, _, res, __) => {
   Logger.error(`Request ended with error ${err.message}`, err)
-  if (err?.status) {
-    return res.status(err.status).send()
-  }
-  return res.send()
+  const statusCode = err.status || 500
+  return res.status(statusCode).send()
 }
 
 export { requestLogger, errorHandler }

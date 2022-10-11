@@ -38,9 +38,7 @@ export class UserInformationController extends Controller {
   public async get(
     @Request() request: RequestWithUser
   ): Promise<PortfolioListResultSuccess | Failure> {
-    const result = await this.portfolioService.getAllSorted(
-      request.user.userUuid
-    )
+    const result = await this.portfolioService.getAllSorted(request.user._id)
     if (result.success) {
       return result as PortfolioListResultSuccess
     }
@@ -60,9 +58,7 @@ export class UserInformationController extends Controller {
   public async getRecent(
     @Request() request: RequestWithUser
   ): Promise<PortfolioResultSuccess | Failure> {
-    const result = await this.portfolioService.getMostRecent(
-      request.user.userUuid
-    )
+    const result = await this.portfolioService.getMostRecent(request.user._id)
     if (result.success) {
       return result as PortfolioResultSuccess
     }
@@ -84,7 +80,7 @@ export class UserInformationController extends Controller {
     @Query() returnUpdatedUser?: boolean
   ): Promise<PortfolioResultSuccess | Failure> {
     const result = await this.portfolioService.add(
-      request.user.userUuid,
+      request.user._id,
       body,
       returnUpdatedUser
     )

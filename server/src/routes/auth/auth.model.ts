@@ -1,3 +1,5 @@
+import { UserDocument } from '../../mongo/user/user.model'
+
 export type AuthBody = {
   email: string
   password: string

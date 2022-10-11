@@ -16,7 +16,20 @@ export class UserController extends Controller {
   @Get()
   @Security('jwt')
   public async get(@Request() request: RequestWithUser) {
-    const result = await this.userService.findById(request.user.userUuid)
+    console.log(`UserController: request user: `, request.user)
+    const result = await this.userService.findById(request.user._id)
+    if (result.success) {
+      this.setStatus(200)
+      return result as UserSuccess
+    }
+    this.setStatus(401)
+    return result as UserFailure
+  }
+
+  @Get('unauthorized')
+  @Security('jwt', ['somescope:scope'])
+  public async unauthorized(@Request() request: RequestWithUser) {
+    const result = await this.userService.findById(request.user._id)
     if (result.success) {
       this.setStatus(200)
       return result as UserSuccess
