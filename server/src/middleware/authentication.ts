@@ -16,7 +16,7 @@ export class AuthenticationError extends Error {
 }
 
 const reject = (
-  message: string = 'Auth cookie is required for authenticated routes',
+  message: string = 'Auth token is required for authenticated routes',
   status: number = 401
 ) => Promise.reject(new AuthenticationError(message, status))
 

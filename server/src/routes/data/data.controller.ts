@@ -3,11 +3,11 @@ import { Controller, Get, Path, Route, Tags } from 'tsoa'
 import { redisClient } from '../../middleware/redis'
 import { DataFailure, DataSuccess } from './data.model'
 import { performance } from 'perf_hooks'
+import { todos } from '../../mongo/todos'
 
 @Route('data')
 @Tags('Data')
 export class DataController extends Controller {
-  static readonly ENDPOINT = 'https://jsonplaceholder.typicode.com/posts'
   static readonly TODOS_KEY_PREFIX = 'todos:'
   static readonly TODOS_ALL_KEY = 'todos:all'
 
@@ -33,7 +33,7 @@ export class DataController extends Controller {
         return this.makeResult(timeStart, true, JSON.parse(cachedResults))
       }
 
-      const { data } = await axios.get(DataController.ENDPOINT)
+      const data = await todos.find()
       // NX: don't allow sets when key exists
       // EX: cache validity in seconds (evict cache after x seconds)
       await redisClient.set(
@@ -65,7 +65,7 @@ export class DataController extends Controller {
         return this.makeResult(timeStart, true, JSON.parse(cachedResults))
       }
 
-      const { data } = await axios.get(`${DataController.ENDPOINT}/${todoId}`)
+      const data = await todos.findById(todoId)
       // NX: don't allow sets when key exists
       // EX: cache validity in seconds (evict cache after x seconds)
       await redisClient.set(redisKey, JSON.stringify(data), {
