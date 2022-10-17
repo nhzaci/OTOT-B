@@ -9,9 +9,11 @@ import {
   DatePickerProps,
   TimePicker,
   TimePickerProps,
+  Table,
+  notification,
 } from 'antd'
 import moment from 'moment'
-import axios, { AxiosPromise } from 'axios'
+import axios from 'axios'
 
 const Placeholder = () => {
   const [response, setResponse] = useState(
@@ -19,22 +21,22 @@ const Placeholder = () => {
   )
   const [error, setError] = useState('Error messages appear here')
 
+  enum NotificationType {
+    Info = 'info',
+    Success = 'success',
+    Error = 'error',
+    Warning = 'warning',
+  }
+
   const makeRequest = async (
     requestType: string,
-    promise: () => AxiosPromise
+    promise: () => Promise<any>
   ) => {
     try {
       const res = await promise()
-      setResponse(
-        `  Request type: ${requestType};
-
-  URI: ${axios.getUri(res.config)};
-
-  Data: ${JSON.stringify(res.data)}`
-      )
-    } catch (err) {
-      console.error(`Error making API req: ${err}`)
-      setError(`${err}`)
+      console.log(`${requestType} success`, { res })
+    } catch (e) {
+      console.error(`${requestType} Error`, { e })
     }
   }
 
@@ -44,10 +46,184 @@ const Placeholder = () => {
   const serverlessUrl =
     'https://rnibelxibpw3taq5ovabffkhke0zulwd.lambda-url.us-east-1.on.aws/'
 
-  const getRequest = () => axios.get(backendUrl)
-  const postRequest = () => axios.post(backendUrl)
-  const putRequest = () => axios.put(backendUrl)
-  const deleteRequest = () => axios.delete(backendUrl)
+  type TodoBody = {
+    title: string
+    description: string
+  }
+  type Todo = { id: string } & TodoBody
+
+  const [todoInput, setTodoInput] = useState<TodoBody | {}>({})
+  const [amendTodoInput, setAmendTodoInput] = useState<TodoBody | {}>({})
+  const [amendTodoInputId, setAmendTodoInputId] = useState('')
+  const [todos, setTodos] = useState<Todo[]>([])
+  const [todosSize, setTodosSize] = useState(0)
+  const getRequest = async () => {
+    try {
+      const result = await axios.get(backendUrl)
+      setTodos(result?.data?.data)
+      setTodosSize(result?.data?.data?.length)
+      openNotification(
+        'GET request',
+        `Code: ${result.status}, ${
+          result?.data?.success
+            ? 'Success'
+            : `Failure; Message: ${result?.data?.message}`
+        }`,
+        result?.data?.success
+          ? NotificationType.Success
+          : NotificationType.Error
+      )
+    } catch (e) {
+      openNotification(
+        'GET request',
+        `Unsuccessful; ${e}; Error Message: ${e?.response?.data?.message}`,
+        NotificationType.Error
+      )
+    }
+  }
+  const postRequest = async () => {
+    if (!todoInput || !todoInput?.title || !todoInput?.description) {
+      openNotification(
+        'POST Request',
+        'Incomplete body, please fill up both title and description'
+      )
+      return
+    }
+    try {
+      const result = await axios.post(backendUrl, todoInput)
+      openNotification(
+        'POST request',
+        `Code: ${result.status}, ${
+          result?.data?.success
+            ? 'Success'
+            : `Failure; Message: ${result?.data?.message}`
+        }`,
+        result?.data?.success
+          ? NotificationType.Success
+          : NotificationType.Error
+      )
+    } catch (e) {
+      console.log({ e })
+      openNotification(
+        'POST request',
+        `Unsuccessful; ${e}; Error Message: ${e?.response?.data?.message}`,
+        NotificationType.Error
+      )
+    }
+  }
+  const putRequest = async () => {
+    if (!amendTodoInputId) {
+      openNotification(
+        'PUT Request',
+        'Please fill in ID for todo',
+        NotificationType.Warning
+      )
+      return
+    }
+    if (
+      !amendTodoInput ||
+      !amendTodoInput?.title ||
+      !amendTodoInput?.description
+    ) {
+      openNotification(
+        'PUT Request',
+        'Incomplete body, please fill up both title and description',
+        NotificationType.Warning
+      )
+      return
+    }
+    try {
+      const result = await axios.put(
+        `${backendUrl}/${amendTodoInputId}`,
+        amendTodoInput
+      )
+      openNotification(
+        'PUT request',
+        `Code: ${result.status}, ${
+          result?.data?.success
+            ? 'Success'
+            : `Failure; Message: ${result?.data?.message}`
+        }`,
+        result?.data?.success
+          ? NotificationType.Success
+          : NotificationType.Error
+      )
+    } catch (e) {
+      openNotification(
+        'PUT request',
+        `Unsuccessful; ${e}; Error Message: ${e?.response?.data?.message}`,
+        NotificationType.Error
+      )
+    }
+  }
+
+  const [deleteTodoId, setDeleteTodoId] = useState('')
+  const deleteRequest = async () => {
+    if (!deleteTodoId) {
+      openNotification('DELETE Request', 'Please fill in an id to delete')
+      return
+    }
+    try {
+      const result = await axios.delete(`${backendUrl}/${deleteTodoId}`)
+      openNotification(
+        'DELETE request',
+        `Code: ${result.status}, ${
+          result?.data?.success
+            ? 'Success'
+            : `Failure; Message: ${result?.data?.message}`
+        }`,
+        result?.data?.success
+          ? NotificationType.Success
+          : NotificationType.Error
+      )
+    } catch (e) {
+      openNotification(
+        'DELETE request',
+        `Unsuccessful; ${e}; Error Message: ${e?.response?.data?.message}`,
+        NotificationType.Error
+      )
+    }
+  }
+
+  const TodoTable = () => {
+    const columns = [
+      {
+        title: 'Id',
+        dataIndex: 'id',
+        key: 'id',
+      },
+      {
+        title: 'Title',
+        dataIndex: 'title',
+        key: 'title',
+      },
+      {
+        title: 'Description',
+        dataIndex: 'description',
+        key: 'description',
+      },
+    ]
+    return (
+      <>
+        <Table dataSource={todos} columns={columns} />
+      </>
+    )
+  }
+
+  const TodoInput = (state: any, changeStateFn: any) => (
+    <>
+      <Input
+        placeholder="Todo Title"
+        onChange={(e) => changeStateFn({ ...state, title: e.target.value })}
+      />
+      <Input
+        placeholder="Todo Description"
+        onChange={(e) =>
+          changeStateFn({ ...state, description: e.target.value })
+        }
+      />
+    </>
+  )
 
   const [date, setDate] = useState<string>('2022-09-11')
   const [time, setTime] = useState<string>('00:00:00')
@@ -68,6 +244,33 @@ const Placeholder = () => {
     params.date_time = makeDateTime(date, time)
     return axios.get(serverlessUrl, { params })
   }
+  const makeServerlessRequestAndDisplay = async () => {
+    try {
+      const result = await makeServerlessRequest()
+      openNotification(
+        'Serverless request',
+        `${result.statusText}, Code: ${result.status}`
+      )
+      console.log({ result })
+      setResponse(`Response: ${JSON.stringify(result)}`)
+    } catch (e) {
+      openNotification('Serverless request', `Failed, Code: ${e?.status}`)
+      setError(`${JSON.stringify(e)}`)
+      console.error({ serverlessError: e })
+    }
+  }
+
+  const openNotification = (
+    title: string,
+    description: string,
+    type: string = 'info'
+  ) => {
+    notification[type]({
+      message: title,
+      description,
+      onClick: () => {},
+    })
+  }
 
   return (
     <>
@@ -82,31 +285,50 @@ const Placeholder = () => {
         }}
       >
         <Col>
-          <h1>Make request:</h1>
-
+          <h1>Simple Http Backend</h1>
+          <p>Url: {backendUrl}</p>
+          <h2>GET request:</h2>
           <Button onClick={() => makeRequest('GET', getRequest)}>
-            GET Request
+            Get all Todos
           </Button>
-          <Divider type="vertical" />
+          <p>Number of records: {todosSize}</p>
+          {TodoTable()}
+          <Divider type="horizontal" />
 
+          <h2>POST request:</h2>
+          {TodoInput(todoInput, setTodoInput)}
           <Button onClick={() => makeRequest('POST', postRequest)}>
-            POST Request
+            Create a new TODO POST Request
           </Button>
-          <Divider type="vertical" />
+          <Divider type="horizontal" />
 
+          <h2>PUT request:</h2>
+          <Input
+            placeholder="Todo ID"
+            onChange={(e) => setAmendTodoInputId(e.target.value)}
+          />
+          {TodoInput(amendTodoInput, setAmendTodoInput)}
           <Button onClick={() => makeRequest('PUT', putRequest)}>
-            PUT Request
+            Amend Todo
           </Button>
-          <Divider type="vertical" />
+          <Divider type="horizontal" />
 
+          <h2>DELETE request:</h2>
+          <Input
+            placeholder="Todo ID to delete"
+            onChange={(e) => {
+              setDeleteTodoId(e.target.value)
+            }}
+          />
           <Button onClick={() => makeRequest('DELETE', deleteRequest)}>
             DELETE Request
           </Button>
 
           <Divider type="horizontal" />
+          <Divider type="horizontal" />
 
           <h1>Serverless Function</h1>
-
+          <p>Url: {serverlessUrl}</p>
           <DatePicker
             onChange={onChangeDate}
             defaultValue={moment(date, 'YYYY-MM-dd')}
@@ -117,19 +339,14 @@ const Placeholder = () => {
             defaultValue={moment(time, 'HH:mm:ss')}
             style={{ width: '50%' }}
           />
-
-          <Button
-            onClick={() =>
-              makeRequest('Serverless Request', makeServerlessRequest)
-            }
-          >
+          <Button onClick={() => makeServerlessRequestAndDisplay()}>
             Call Serverless Function
           </Button>
 
-          <Divider type="horizontal" />
-
           <h1>Response:</h1>
           <p>{response}</p>
+
+          <Divider type="horizontal" />
 
           <h1>Error:</h1>
           <p>{error}</p>
