@@ -9,8 +9,11 @@ export class TodosRepo {
     this.todos = new Map<string, TodoBody>()
   }
 
-  addTodo(todo: TodoBody): void {
-    const id = v4()
+  clear(): void {
+    this.todos.clear()
+  }
+
+  addTodo(todo: TodoBody, id: string = v4()): void {
     this.todos.set(id, todo)
 
     Logger.info(`Added new todo, new todos length: ${this.todos.size}`, todo)
