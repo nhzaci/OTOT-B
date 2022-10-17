@@ -6,7 +6,7 @@
 - [x] B2.1: Testing through CI
 - [x] B2.2: Deploying using CD
 - [x] B3: Implement a frontend
-- [] B4: Pull data from serverless function
+- [X] B4: Pull data from serverless function
 
 # Running Application
 
@@ -21,7 +21,7 @@
 
 ```bash
 # from project root
-yarn && yarn --cwd ./server && yarn --cwd ./web && yarn --cwd ./serverless
+yarn && yarn --cwd ./server && yarn --cwd ./web && yarn --cwd ./serverless && yarn --cwd ./server build
 ```
 
 - Running server and web application in dev
